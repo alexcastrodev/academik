@@ -67,7 +67,7 @@ class LatexTemplateBuilder
   end
 
   def bibtex_entry(paper)
-    key = [paper.authors.to_s.split(",").first.to_s.split.last, paper.year].compact.join("")
+    key = [ paper.authors.to_s.split(",").first.to_s.split.last, paper.year ].compact.join("")
     key = "ref#{paper.id}" if key.blank?
 
     "\\bibitem{#{key}} #{escape_latex(paper.authors.to_s)}. \\textit{#{escape_latex(paper.title)}}. #{escape_latex(paper.journal.to_s)}#{paper.year ? ", #{paper.year}" : ""}."

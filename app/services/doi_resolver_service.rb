@@ -80,7 +80,7 @@ class DoiResolverService
   end
 
   def map_crossref(data, doi)
-    authors  = Array(data["author"]).map { |a| [a["given"], a["family"]].compact.join(" ") }.join(", ")
+    authors  = Array(data["author"]).map { |a| [ a["given"], a["family"] ].compact.join(" ") }.join(", ")
     year     = data.dig("issued", "date-parts", 0, 0)
     pdf_url  = Array(data["link"]).find { |l| l["content-type"] == "application/pdf" }&.dig("URL")
 

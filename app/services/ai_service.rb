@@ -37,7 +37,7 @@ class AiService
     message = client.messages.create(
       model: model,
       max_tokens: 4096,
-      messages: [{ role: "user", content: prompt }]
+      messages: [ { role: "user", content: prompt } ]
     )
 
     message.content.first.text
