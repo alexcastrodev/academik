@@ -5,36 +5,36 @@ module Shell
   class CommandError < StandardError; end
   def run_command(command, raise_on_failure: true)
     puts "▶ #{command}"
-    
+
     stdout, stderr, status = Open3.capture3(command)
 
     puts stdout unless stdout.empty?
     warn stderr unless stderr.empty?
-    
+
     if !status.success? && raise_on_failure
       raise CommandError, "Command failed with exit code #{status.exitstatus}: #{stderr}"
     end
-    
-    [stdout, stderr, status]
+
+    [ stdout, stderr, status ]
   end
 
   def build_image(image)
     puts "\n🔨 Building #{image[:name]}:#{image[:tag]}..."
-    
+
     validate_image_config!(image)
-    
+
     cmd = "docker build " \
           "-f #{Shellwords.escape(image[:dockerfile])} " \
           "-t #{image[:name]}:#{image[:tag]} " \
           "#{Shellwords.escape(image[:context])}"
-    
+
     run_command(cmd)
     puts "✓ Build completed"
   end
 
   def tag_image(image)
     puts "🏷️  Tagging #{image[:name]}:#{image[:tag]} → #{REGISTRY}/#{image[:name]}:#{image[:tag]}"
-    
+
     cmd = "docker tag #{image[:name]}:#{image[:tag]} #{REGISTRY}/#{image[:name]}:#{image[:tag]}"
     run_command(cmd)
   end
@@ -42,25 +42,25 @@ module Shell
   def push_image(image)
     full_name = "#{REGISTRY}/#{image[:name]}:#{image[:tag]}"
     puts "📤 Pushing #{full_name}..."
-    
+
     run_command("docker push #{full_name}")
     puts "✓ Push completed"
   end
 
   def publish_image(image)
     full_name = "#{REGISTRY}/#{image[:name]}:#{image[:tag]}"
-    
+
     begin
       puts "\n" + "=" * 60
       puts "Publishing: #{full_name}"
       puts "=" * 60
-      
+
       Dir.chdir(PROJECT_DIR) do
         build_image(image)
         tag_image(image)
         push_image(image)
       end
-      
+
       puts "\n✅ Successfully published #{full_name}\n"
     rescue Interrupt
       puts "\n⚠️  Build cancelled by user"
@@ -76,11 +76,11 @@ module Shell
   end
 
   def validate_image_config!(image)
-    required_keys = [:name, :tag, :dockerfile, :context]
+    required_keys = [ :name, :tag, :dockerfile, :context ]
     missing_keys = required_keys - image.keys
-    
+
     raise ArgumentError, "Missing keys: #{missing_keys.join(', ')}" if missing_keys.any?
-    
+
     raise ArgumentError, "Dockerfile not found: #{image[:dockerfile]}" \
       unless File.exist?(image[:dockerfile])
   end
