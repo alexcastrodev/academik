@@ -5,6 +5,11 @@ export default class extends Controller {
 
   open(event) {
     const row = event.currentTarget
+    const url = row.dataset.paperUrl
+    if (url) {
+      window.location.href = url
+      return
+    }
     this.rowTargets.forEach(r => r.classList.toggle("selected", r === row))
     this.panelTarget.classList.add("open")
   }
