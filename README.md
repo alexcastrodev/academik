@@ -1,4 +1,4 @@
-# Academic
+# Academik
 
 A minimalist paper manager with AI-powered summaries and LaTeX export.
 
