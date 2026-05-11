@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #1a73e8;
+  --color-primary-dark: #1557b0;
+  --color-danger: #d93025;
+  --color-surface: #ffffff;
+  --color-bg: #f5f5f5;
+  --color-border: #e0e0e0;
+  --color-muted: #757575;
+  --color-light: #9e9e9e;
+  --font-sans: "Google Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Tag pill uses inline style for dynamic color — safe via helper */
+.tag-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.status-unread   { background: #e8f0fe; color: #1a73e8; }
+.status-reading  { background: #fff8e1; color: #f57c00; }
+.status-read     { background: #e6f4ea; color: #137333; }
+.status-to_cite  { background: #f3e8fd; color: #7b1fa2; }
+.status-skipped  { background: #f5f5f5; color: #757575; }
+
+/* Reading-status toggle buttons (show page) */
+.status-btn {
+  @apply px-3 py-1 rounded-full text-xs font-medium border border-gray-300 cursor-pointer mr-1 mb-1;
+  background: #f5f5f5;
+  color: #555;
+  transition: background 0.15s;
+}
+.status-btn.active { @apply border-blue-500 text-blue-700; background: #e8f0fe; }
+
+/* CodeMirror editor sizing */
+.latex-textarea { display: none; }
+.cm-editor { height: 60vh; border: 1px solid #e0e0e0; border-radius: 6px; font-size: 13px; }
