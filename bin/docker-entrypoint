@@ -1,12 +1,9 @@
 #!/bin/bash -e
 
-# If running the rails server then create or migrate existing database
-if [[ "$*" == *"server"* ]]; then
-  until ./bin/rails db:version > /dev/null 2>&1; do
-    echo "Waiting for database..."
-    sleep 2
-  done
-  ./bin/rails db:prepare
-fi
+until ./bin/rails db:version > /dev/null 2>&1; do
+  echo "Waiting for database..."
+  sleep 2
+done
+./bin/rails db:prepare
 
 exec "${@}"
