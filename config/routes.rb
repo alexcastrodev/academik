@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  # Model Context Protocol
+  post "/mcp", to: "mcp#handle"
+  get  "/mcp", to: "mcp#handle"
+
   root "papers#index"
 
   resources :papers do

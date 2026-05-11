@@ -74,3 +74,5 @@ end
 gem "tailwindcss-rails", "~> 4.4"
 
 gem "anthropic", "~> 1.39"
+
+gem "mcp", "~> 0.15.0"
