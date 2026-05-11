@@ -1,0 +1,164 @@
+<% content_for :title, "Add Paper" %>
+
+<div class="max-w-2xl mx-auto">
+  <div class="flex items-center gap-3 mb-6">
+    <%= link_to papers_path, class: "p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg" do %>
+      <i data-lucide="arrow-left" class="w-4 h-4"></i>
+    <% end %>
+    <h1 class="text-xl font-semibold text-gray-800">Add Paper</h1>
+  </div>
+
+  <div class="bg-white border border-gray-200 rounded-xl shadow-sm" data-controller="import-tab">
+    <%# Tab bar %>
+    <div class="flex border-b border-gray-200 px-4">
+      <button type="button"
+              class="px-4 py-3 text-sm font-medium -mb-px"
+              data-import-tab-target="pdfTab"
+              data-action="click->import-tab#showPdf">
+        <i data-lucide="upload" class="w-3.5 h-3.5 inline mr-1"></i> Upload PDF
+      </button>
+      <button type="button"
+              class="px-4 py-3 text-sm font-medium -mb-px"
+              data-import-tab-target="doiTab"
+              data-action="click->import-tab#showDoi">
+        <i data-lucide="link" class="w-3.5 h-3.5 inline mr-1"></i> Import via DOI / URL
+      </button>
+    </div>
+
+    <div class="p-5">
+      <%= form_with model: @paper, multipart: true, data: { controller: "doi-lookup" } do |f| %>
+        <% if @paper.errors.any? %>
+          <div class="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+            <% @paper.errors.full_messages.each do |msg| %>
+              <p><%= msg %></p>
+            <% end %>
+          </div>
+        <% end %>
+
+        <%# PDF panel %>
+        <div data-import-tab-target="pdfPanel" class="mb-4">
+          <%= f.label :pdf, "PDF File", class: "block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1" %>
+          <%= f.file_field :pdf, accept: "application/pdf",
+              class: "block w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" %>
+        </div>
+
+        <%# DOI panel %>
+        <div data-import-tab-target="doiPanel" class="hidden mb-4">
+          <%= f.label :doi_input, "DOI or URL", class: "block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1" %>
+          <%= f.text_field :doi_input, placeholder: "10.1234/example or https://doi.org/…",
+              class: "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+              data: { "doi-lookup-target": "input", action: "blur->doi-lookup#lookup" } %>
+          <p class="mt-1 text-xs text-gray-400" data-doi-lookup-target="status">Paste a DOI, arXiv or URL and tab out to auto-fill.</p>
+        </div>
+
+        <hr class="my-4 border-gray-200">
+        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          Metadata <span class="font-normal normal-case text-gray-400">(auto-filled from DOI if provided)</span>
+        </h3>
+
+        <div class="mb-4">
+          <%= f.label :title, class: "block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1" %>
+          <%= f.text_field :title, required: true,
+              class: "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+              data: { "doi-lookup-target": "title" } %>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+          <div class="sm:col-span-2">
+            <%= f.label :authors, class: "block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1" %>
+            <%= f.text_field :authors, placeholder: "Author A, Author B",
+                class: "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                data: { "doi-lookup-target": "authors" } %>
+          </div>
+          <div>
+            <%= f.label :year, class: "block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1" %>
+            <%= f.number_field :year, min: 1900, max: 2100,
+                class: "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                data: { "doi-lookup-target": "year" } %>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div>
+            <%= f.label :journal, class: "block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1" %>
+            <%= f.text_field :journal,
+                class: "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                data: { "doi-lookup-target": "journal" } %>
+          </div>
+          <div>
+            <%= f.label :doi, "DOI", class: "block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1" %>
+            <%= f.text_field :doi,
+                class: "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                data: { "doi-lookup-target": "doi" } %>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <%= f.label :abstract, class: "block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1" %>
+          <%= f.text_area :abstract, rows: 4,
+              class: "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y",
+              data: { "doi-lookup-target": "abstract" } %>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div>
+            <%= f.label :reading_status, "Status", class: "block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1" %>
+            <%= f.select :reading_status, Paper.reading_statuses.keys.map { |s| [s.humanize, s] }, {},
+                class: "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white" %>
+          </div>
+          <div>
+            <%= f.label :rating, "Rating (0–5)", class: "block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1" %>
+            <%= f.number_field :rating, min: 0, max: 5,
+                class: "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <%= f.label :notes, class: "block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1" %>
+          <%= f.text_area :notes, rows: 3,
+              class: "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y" %>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+          <div>
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Collections</p>
+            <div class="flex flex-col gap-1 max-h-36 overflow-y-auto border border-gray-200 rounded-lg p-2">
+              <% @collections.each do |col| %>
+                <label class="flex items-center gap-2 text-sm cursor-pointer hover:bg-gray-50 rounded px-1 py-0.5">
+                  <%= check_box_tag "paper[collection_ids][]", col.id,
+                      @paper.collection_ids.include?(col.id), id: "paper_collection_#{col.id}",
+                      class: "rounded border-gray-300 text-blue-600" %>
+                  <%= col.name %>
+                </label>
+              <% end %>
+              <% if @collections.empty? %>
+                <p class="text-xs text-gray-400 px-1">No collections yet.</p>
+              <% end %>
+            </div>
+          </div>
+          <div>
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Tags</p>
+            <div class="flex flex-col gap-1 max-h-36 overflow-y-auto border border-gray-200 rounded-lg p-2">
+              <% @tags.each do |tag| %>
+                <label class="flex items-center gap-2 text-sm cursor-pointer hover:bg-gray-50 rounded px-1 py-0.5">
+                  <%= check_box_tag "paper[tag_ids][]", tag.id,
+                      @paper.tag_ids.include?(tag.id), id: "paper_tag_#{tag.id}",
+                      class: "rounded border-gray-300 text-blue-600" %>
+                  <%= tag_pill(tag) %>
+                </label>
+              <% end %>
+              <% if @tags.empty? %>
+                <p class="text-xs text-gray-400 px-1">No tags yet.</p>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3 pt-4 border-t border-gray-200">
+          <%= f.submit "Save Paper", class: "px-5 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 cursor-pointer transition-colors" %>
+          <%= link_to "Cancel", papers_path, class: "px-5 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-100 transition-colors" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,38 @@
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-xl font-semibold text-gray-800">LaTeX Documents</h1>
+  <%= link_to new_latex_document_path, class: "flex items-center gap-1.5 bg-blue-600 text-white text-sm font-medium px-4 py-1.5 rounded-lg hover:bg-blue-700 transition-colors" do %>
+    <i data-lucide="plus" class="w-4 h-4"></i> New Document
+  <% end %>
+</div>
+
+<% if @documents.empty? %>
+  <div class="flex flex-col items-center justify-center h-48 text-gray-400 gap-2">
+    <i data-lucide="file-text" class="w-10 h-10 opacity-30"></i>
+    <p class="text-sm">No LaTeX documents yet.</p>
+  </div>
+<% else %>
+  <div class="space-y-3">
+    <% @documents.each do |doc| %>
+      <div class="bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-4 hover:border-gray-300 transition-colors group">
+        <i data-lucide="file-text" class="w-8 h-8 text-gray-300 flex-shrink-0"></i>
+        <div class="flex-1 min-w-0">
+          <h3 class="text-sm font-medium text-gray-800">
+            <%= link_to doc.title, doc, class: "hover:text-blue-600" %>
+          </h3>
+          <p class="text-xs text-gray-400 mt-0.5">
+            <%= doc.generation_type.humanize %> · <%= doc.created_at.strftime("%b %d, %Y") %>
+          </p>
+        </div>
+        <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <%= link_to "Edit", edit_latex_document_path(doc),
+              class: "px-3 py-1.5 text-xs font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors" %>
+          <%= link_to "Download .tex", download_latex_document_path(doc),
+              class: "px-3 py-1.5 text-xs font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors" %>
+          <%= button_to "Delete", doc, method: :delete,
+              data: { turbo_confirm: "Delete this document?" },
+              class: "px-3 py-1.5 text-xs font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors cursor-pointer" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>

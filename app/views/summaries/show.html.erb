@@ -1,0 +1,17 @@
+<div class="flex items-center gap-3 mb-6">
+  <%= link_to @paper, class: "p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg" do %>
+    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+  <% end %>
+  <h1 class="text-xl font-semibold text-gray-800">Summary</h1>
+</div>
+
+<div class="bg-white border border-gray-200 rounded-xl p-5">
+  <div class="flex items-center gap-2 text-sm mb-4 pb-3 border-b border-gray-100">
+    <span class="font-medium text-gray-700"><%= @summary.model_used %></span>
+    <span class="text-gray-300">·</span>
+    <span class="text-gray-500"><%= @summary.status.humanize %></span>
+  </div>
+  <div class="prose prose-sm max-w-none text-gray-700 text-sm leading-relaxed">
+    <%= simple_format(@summary.content.to_s) %>
+  </div>
+</div>

@@ -1,0 +1,36 @@
+<div class="flex items-center gap-3 mb-6">
+  <%= link_to @paper, class: "p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg" do %>
+    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+  <% end %>
+  <h1 class="text-xl font-semibold text-gray-800">Summary History</h1>
+</div>
+
+<% if @summaries.empty? %>
+  <div class="flex flex-col items-center justify-center h-48 text-gray-400 gap-2">
+    <i data-lucide="inbox" class="w-10 h-10 opacity-30"></i>
+    <p class="text-sm">No summaries generated yet.</p>
+  </div>
+<% else %>
+  <div class="space-y-4">
+    <% @summaries.each do |s| %>
+      <div class="bg-white border border-gray-200 rounded-xl p-4">
+        <div class="flex items-center justify-between gap-3 mb-2">
+          <div class="flex items-center gap-2 text-sm">
+            <span class="font-medium text-gray-700"><%= s.model_used %></span>
+            <span class="text-gray-300">·</span>
+            <span class="text-gray-500"><%= s.status.humanize %></span>
+            <span class="text-gray-300">·</span>
+            <span class="text-gray-400 text-xs"><%= s.created_at.strftime("%b %d, %Y %H:%M") %></span>
+          </div>
+          <%= button_to "Delete", paper_summary_path(@paper, s), method: :delete,
+              class: "px-2 py-1 text-xs text-red-600 hover:bg-red-50 border border-red-200 rounded cursor-pointer transition-colors" %>
+        </div>
+        <% if s.complete? %>
+          <div class="prose prose-sm max-w-none text-gray-700 text-sm leading-relaxed">
+            <%= simple_format(s.content) %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

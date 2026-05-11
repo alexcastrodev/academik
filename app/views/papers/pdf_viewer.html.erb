@@ -1,0 +1,129 @@
+<% content_for :title, "#{@paper.title} — PDF" %>
+<% content_for :head do %>
+  <style>
+    #pdf-text-layer {
+      position: absolute !important; top: 0 !important; left: 0 !important;
+      overflow: hidden !important; line-height: 1 !important;
+      pointer-events: none !important;
+    }
+    #pdf-text-layer > span, #pdf-text-layer > br {
+      color: transparent !important; position: absolute !important;
+      white-space: pre !important; cursor: text !important;
+      transform-origin: 0% 0% !important;
+      pointer-events: auto !important;
+    }
+    #pdf-text-layer ::selection { background: rgba(59,130,246,0.4); }
+    .pdf-highlight { position: absolute; pointer-events: none; mix-blend-mode: multiply; border-radius: 2px; }
+  </style>
+<% end %>
+<% content_for :full_bleed do %>
+
+<div class="flex flex-col h-full overflow-hidden bg-gray-800"
+     data-controller="pdf-viewer"
+     data-pdf-viewer-url-value="<%= rails_blob_url(@paper.pdf, disposition: 'inline') %>"
+     data-pdf-viewer-annotations-url-value="<%= paper_annotations_path(@paper) %>"
+     data-pdf-viewer-paper-id-value="<%= @paper.id %>">
+
+  <%# ── Toolbar ── %>
+  <div class="flex items-center gap-2 px-3 h-11 bg-gray-900 text-white flex-shrink-0 z-20">
+    <%= link_to paper_path(@paper), class: "p-1.5 text-gray-400 hover:text-white hover:bg-gray-700 rounded mr-1" do %>
+      <i data-lucide="arrow-left" class="w-4 h-4"></i>
+    <% end %>
+    <span class="text-sm font-medium truncate max-w-xs text-gray-200"><%= @paper.title %></span>
+    <div class="flex-1"></div>
+
+    <%# Color picker %>
+    <div class="flex items-center gap-1.5 mr-2">
+      <% Annotation::COLORS.each do |color| %>
+        <button class="w-5 h-5 rounded-full border-2 border-transparent hover:scale-110 transition-transform"
+                style="background:<%= { yellow: '#fde68a', green: '#86efac', blue: '#93c5fd', red: '#fca5a5', purple: '#c4b5fd' }[color.to_sym] %>"
+                data-color="<%= color %>"
+                data-action="click->pdf-viewer#setColor"
+                title="<%= color.capitalize %>">
+        </button>
+      <% end %>
+    </div>
+
+    <%# Page navigation %>
+    <button class="p-1.5 text-gray-400 hover:text-white hover:bg-gray-700 rounded"
+            data-action="click->pdf-viewer#prevPage">
+      <i data-lucide="chevron-left" class="w-4 h-4"></i>
+    </button>
+    <span class="text-sm text-gray-300 tabular-nums">
+      <span data-pdf-viewer-target="pageNum">1</span>
+      /
+      <span data-pdf-viewer-target="pageCount">…</span>
+    </span>
+    <button class="p-1.5 text-gray-400 hover:text-white hover:bg-gray-700 rounded"
+            data-action="click->pdf-viewer#nextPage">
+      <i data-lucide="chevron-right" class="w-4 h-4"></i>
+    </button>
+  </div>
+
+  <%# ── Body ── %>
+  <div class="flex flex-1 min-h-0 overflow-hidden">
+
+    <%# PDF canvas area %>
+    <div class="flex-1 overflow-auto flex justify-center py-6 px-4 bg-gray-700">
+      <div class="relative shadow-2xl"
+           data-action="mouseup->pdf-viewer#handleSelection">
+        <canvas data-pdf-viewer-target="canvas" class="block"></canvas>
+        <%# Text layer sits on top for selection %>
+        <div id="pdf-text-layer"
+             data-pdf-viewer-target="textLayer"
+             class="absolute top-0 left-0 select-text overflow-hidden"
+             style="line-height:1;">
+        </div>
+        <%# Selection toolbar — step 1 %>
+        <div data-pdf-viewer-target="selectionToolbar"
+             class="hidden absolute z-30 bg-gray-900 rounded-lg shadow-xl px-2 py-1.5 flex items-center gap-1.5"
+             style="-webkit-user-select:none; user-select:none;">
+          <button data-action="mousedown->pdf-viewer#highlightDirect"
+                  class="px-2.5 py-1 bg-blue-500 hover:bg-blue-400 text-white text-xs font-medium rounded-md">
+            Highlight
+          </button>
+          <div class="w-px h-4 bg-gray-600"></div>
+          <button data-action="mousedown->pdf-viewer#openNotePopup"
+                  class="p-1 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md" title="Add note">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+          </button>
+          <div class="w-px h-4 bg-gray-600"></div>
+          <button data-action="mousedown->pdf-viewer#cancelAnnotation"
+                  class="p-1 text-gray-400 hover:text-white hover:bg-gray-700 rounded-md">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+
+        <%# Note popup — step 2 %>
+        <div data-pdf-viewer-target="notePopup"
+             class="hidden absolute z-30 w-72 bg-white rounded-xl shadow-xl border border-gray-200 p-3">
+          <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Add note</p>
+          <textarea data-pdf-viewer-target="noteText" rows="3"
+                    class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    placeholder="Your note…"></textarea>
+          <div class="flex gap-2 mt-2">
+            <button data-action="click->pdf-viewer#saveAnnotation"
+                    class="flex-1 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700">
+              Save
+            </button>
+            <button data-action="click->pdf-viewer#cancelAnnotation"
+                    class="px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100 rounded-lg">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%# Annotations sidebar %>
+    <aside class="w-64 xl:w-72 flex-shrink-0 bg-white border-l border-gray-200 flex flex-col overflow-hidden">
+      <div class="px-3 py-2.5 border-b border-gray-200 flex-shrink-0">
+        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Annotations</p>
+      </div>
+      <div class="flex-1 overflow-y-auto py-1" data-pdf-viewer-target="annotationList"></div>
+    </aside>
+
+  </div>
+</div>
+
+<% end %>

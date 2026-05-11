@@ -1,0 +1,20 @@
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-xl font-semibold text-gray-800">Collections</h1>
+  <%= link_to new_collection_path, class: "flex items-center gap-1.5 bg-blue-600 text-white text-sm font-medium px-4 py-1.5 rounded-lg hover:bg-blue-700 transition-colors" do %>
+    <i data-lucide="plus" class="w-4 h-4"></i> New Collection
+  <% end %>
+</div>
+
+<% if @collections.empty? %>
+  <div class="flex flex-col items-center justify-center h-48 text-gray-400 gap-2">
+    <i data-lucide="folder-open" class="w-10 h-10 opacity-30"></i>
+    <p class="text-sm">No collections yet.</p>
+    <%= link_to "Create one", new_collection_path, class: "text-sm text-blue-600 hover:underline" %>
+  </div>
+<% else %>
+  <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+    <% @collections.each do |col| %>
+      <%= render "collection_tree", collection: col, depth: 0 %>
+    <% end %>
+  </div>
+<% end %>

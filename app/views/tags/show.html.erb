@@ -1,0 +1,24 @@
+<div class="flex items-center gap-3 mb-6">
+  <%= link_to tags_path, class: "p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg" do %>
+    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+  <% end %>
+  <h1 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
+    <%= color_swatch(@tag.color, css_class: "w-3.5 h-3.5") %>
+    <%= @tag.name %>
+  </h1>
+  <%= link_to "Edit", edit_tag_path(@tag),
+      class: "ml-auto px-3 py-1.5 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors" %>
+</div>
+
+<% if @papers.empty? %>
+  <div class="flex flex-col items-center justify-center h-48 text-gray-400 gap-2 bg-white border border-gray-200 rounded-xl">
+    <i data-lucide="inbox" class="w-8 h-8 opacity-30"></i>
+    <p class="text-sm">No papers with this tag.</p>
+  </div>
+<% else %>
+  <div class="space-y-2">
+    <% @papers.each do |paper| %>
+      <%= render "papers/paper", paper: paper %>
+    <% end %>
+  </div>
+<% end %>

@@ -1,0 +1,38 @@
+<% summary = paper.latest_summary %>
+<% if summary.nil? %>
+  <p class="text-sm text-gray-400 mb-3">No summary yet.</p>
+  <% if paper.extracted_text.present? %>
+    <%= button_to "Generate Summary", summarize_paper_path(paper), method: :post,
+        class: "flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 cursor-pointer transition-colors" %>
+  <% else %>
+    <p class="text-sm text-gray-400">Attach and extract a PDF first to generate a summary.</p>
+  <% end %>
+<% elsif summary.generating? %>
+  <div class="flex items-center gap-2 text-sm text-gray-600" data-controller="summary-status" data-summary-status-paper-id-value="<%= paper.id %>">
+    <i data-lucide="loader" class="w-4 h-4 animate-spin text-blue-500"></i>
+    Generating with <strong><%= summary.model_used %></strong>…
+  </div>
+  <p class="mt-1 text-xs text-gray-400">This may take a few minutes.</p>
+<% elsif summary.complete? %>
+  <p class="text-xs text-gray-400 mb-3">
+    Generated with <strong class="text-gray-600"><%= summary.model_used %></strong>
+    on <%= summary.generated_at&.strftime("%b %d, %Y") %>
+  </p>
+  <div class="text-sm text-gray-700 leading-relaxed prose prose-sm max-w-none mb-4">
+    <%= simple_format(summary.content) %>
+  </div>
+  <div class="flex items-center gap-2">
+    <%= button_to "Regenerate", summarize_paper_path(paper), method: :post,
+        class: "px-3 py-1.5 text-xs font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors",
+        data: { turbo_confirm: "Regenerate summary? This will create a new version." } %>
+    <%= link_to "View history", paper_summaries_path(paper),
+        class: "px-3 py-1.5 text-xs font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors" %>
+  </div>
+<% elsif summary.failed? %>
+  <div class="flex items-center gap-2 text-sm text-red-600 mb-3">
+    <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+    Summary generation failed. Is Ollama running?
+  </div>
+  <%= button_to "Retry", summarize_paper_path(paper), method: :post,
+      class: "px-3 py-1.5 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 cursor-pointer transition-colors" %>
+<% end %>

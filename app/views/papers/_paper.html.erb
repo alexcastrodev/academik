@@ -1,0 +1,32 @@
+<div class="bg-white border border-gray-200 rounded-xl p-4 hover:border-gray-300 transition-colors" id="<%= dom_id(paper) %>">
+  <div class="flex items-start justify-between gap-3">
+    <div class="flex-1 min-w-0">
+      <h3 class="text-sm font-medium text-gray-800 leading-snug">
+        <%= link_to paper.title, paper, class: "hover:text-blue-600" %>
+      </h3>
+      <p class="mt-0.5 text-xs text-gray-500 truncate">
+        <%= [paper.authors, paper.year, paper.journal].compact_blank.join(" · ") %>
+      </p>
+    </div>
+    <%= status_badge(paper) %>
+  </div>
+  <% if paper.tags.any? %>
+    <div class="flex flex-wrap gap-1 mt-2">
+      <% paper.tags.each do |tag| %>
+        <%= tag_pill(tag) %>
+      <% end %>
+    </div>
+  <% end %>
+  <div class="flex items-center gap-3 mt-2 text-xs text-gray-400">
+    <% if paper.latest_summary.present? %>
+      <span class="flex items-center gap-1">
+        <i data-lucide="sparkles" class="w-3 h-3"></i> Summary
+      </span>
+    <% end %>
+    <% if paper.pdf.attached? %>
+      <span class="flex items-center gap-1">
+        <i data-lucide="file-text" class="w-3 h-3"></i> PDF
+      </span>
+    <% end %>
+  </div>
+</div>
