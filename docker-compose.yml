@@ -26,5 +26,16 @@ services:
       - db
       - cache
 
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["./bin/rails", "solid_queue:start"]
+    env_file:
+      - .env.development
+    depends_on:
+      - db
+      - cache
+
 volumes:
   postgres_data:
