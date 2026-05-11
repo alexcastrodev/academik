@@ -38,6 +38,12 @@ services:
         target: /var/lib/postgresql
     networks:
       - proxy_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     deploy:
       replicas: 1
       placement:
