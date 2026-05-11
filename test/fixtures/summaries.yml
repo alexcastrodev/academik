@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  paper: one
+  model_used: MyString
+  content: MyText
+  status: 1
+  generated_at: 2026-05-11 10:20:58
+  token_count: 1
+
+two:
+  paper: two
+  model_used: MyString
+  content: MyText
+  status: 1
+  generated_at: 2026-05-11 10:20:58
+  token_count: 1
