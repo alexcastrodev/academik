@@ -11,7 +11,7 @@ class PdfDownloadJob < ApplicationJob
       req.options.timeout      = 120
       req.options.open_timeout = 15
       # Some servers (arxiv) require a browser-like User-Agent
-      req.headers["User-Agent"] = "Mozilla/5.0 (compatible; AcademicApp/1.0)"
+      req.headers["User-Agent"] = "Mozilla/5.0 (compatible; academikApp/1.0)"
     end
 
     raise "PDF download failed: HTTP #{response.status}" unless response.success?

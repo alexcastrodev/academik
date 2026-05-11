@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" class="h-full">
   <head>
-    <title><%= content_for?(:title) ? yield(:title) : "Academic" %></title>
+    <title><%= content_for?(:title) ? yield(:title) : "Academik" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -21,7 +21,7 @@
       </button>
       <%= link_to root_path, class: "flex items-center gap-1.5 font-semibold text-gray-800 text-base" do %>
         <i data-lucide="book-open" class="w-5 h-5 text-blue-600"></i>
-        Academic
+        Academik
       <% end %>
       <div class="flex-1"></div>
       <%= link_to new_paper_path, class: "flex items-center gap-1 bg-blue-600 text-white text-xs font-medium px-3 py-1.5 rounded-md hover:bg-blue-700" do %>
@@ -39,7 +39,7 @@
         <div class="hidden md:flex items-center gap-2 px-4 h-12 border-b border-gray-200 flex-shrink-0">
           <%= link_to root_path, class: "flex items-center gap-2 font-semibold text-gray-800" do %>
             <i data-lucide="book-open" class="w-5 h-5 text-blue-600"></i>
-            Academic
+            Academik
           <% end %>
           <div class="flex-1"></div>
           <%= link_to new_paper_path, class: "p-1.5 rounded-md text-blue-600 hover:bg-blue-50", title: "Add paper" do %>

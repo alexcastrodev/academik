@@ -14,7 +14,7 @@ class OllamaSummarizeJob < ApplicationJob
     )
 
     prompt = <<~PROMPT
-      Summarize the following academic paper in 3-5 paragraphs, highlighting the research question, methodology, key findings, and contributions:
+      Summarize the following academik paper in 3-5 paragraphs, highlighting the research question, methodology, key findings, and contributions:
 
       #{paper.extracted_text.to_s.first(32_000)}
     PROMPT
