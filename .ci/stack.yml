@@ -36,6 +36,9 @@ services:
       - type: bind
         source: /mnt/ssd/@docker/academik/postgres
         target: /var/lib/postgresql
+      - type: bind
+        source: ./initdb
+        target: /docker-entrypoint-initdb.d
     networks:
       - proxy_net
     healthcheck:
