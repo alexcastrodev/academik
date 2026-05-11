@@ -1,0 +1,67 @@
+services:
+  web:
+    image: pifive:5001/academik:latest
+    environment:
+      - RAILS_ENV=production
+      - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - REDIS_URL=redis://valkey:6379/0
+    networks:
+      - proxy_net
+    depends_on:
+      - db
+      - valkey
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+
+  db:
+    image: postgres:18-alpine
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - type: bind
+        source: /mnt/ssd/@docker/academik/postgres
+        target: /var/lib/postgresql
+    networks:
+      - proxy_net
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+
+  valkey:
+    image: valkey/valkey:8-alpine
+    volumes:
+      - type: bind
+        source: /mnt/ssd/@docker/academik/valkey
+        target: /data
+    networks:
+      - proxy_net
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
+
+networks:
+  proxy_net:
+    external: true

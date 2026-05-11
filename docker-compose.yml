@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:18
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+  cache:
+    image: valkey/valkey:8.1.4
+    ports:
+      - "${VALKEY_PORT:-6379}:6379"
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.development
+    depends_on:
+      - db
+      - cache
+
+volumes:
+  postgres_data:
