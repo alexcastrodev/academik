@@ -14,6 +14,7 @@ s3:
   bucket: <%= ENV["S3_BUCKET"] %>
   endpoint: <%= ENV["S3_ENDPOINT"] %>
   force_path_style: true
+  public_url: <%= ENV["S3_PUBLIC_URL"] %>
 
 # Remember not to checkin your GCS keyfile to a repository
 # google:
