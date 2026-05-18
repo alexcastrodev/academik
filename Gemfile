@@ -41,7 +41,7 @@ gem "image_processing", "~> 1.2"
 gem "pdf-reader", "~> 2.0"
 
 # HTTP client for Ollama API and DOI resolution
-gem "faraday", "~> 2.0"
+gem "faraday", "~> 2.14"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
