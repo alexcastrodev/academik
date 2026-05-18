@@ -78,4 +78,4 @@ gem "pg", "~> 1.6"
 
 gem "redis", "~> 5.4"
 
-gem "aws-sdk-s3", "~> 1.0", require: false
+gem "aws-sdk-s3", "~> 1.222", require: false
