@@ -72,7 +72,7 @@ gem "tailwindcss-rails", "~> 4.4"
 
 gem "anthropic", "~> 1.39"
 
-gem "mcp", "~> 0.15.0"
+gem "mcp", "~> 0.16.0"
 
 gem "pg", "~> 1.6"
 
